@@ -159,17 +159,15 @@ public class SpaceXService{
         SpaceDevsLaunchesApiResponse apiData = spaceDevsClient.get()
                 .uri(uriBuilder -> {
                     uriBuilder.path("/launches/")
-                            .queryParam("lsp__id", 121) // Uniquement SpaceX (corrigé : lsp -> lsp__id)
+                            .queryParam("lsp__id", 121)
                             .queryParam("limit", taille)
                             .queryParam("offset", offset)
                             .queryParam("mode", "detailed");
 
-                    // Filtrage par année
                     if (annee != null) {
                         uriBuilder.queryParam("net__gte", annee + "-01-01T00:00:00Z")
                                 .queryParam("net__lte", annee + "-12-31T23:59:59Z");
                     }
-                    // Filtrage par succès / échec (ID status 3 = Success)
                     if (succes != null) {
                         uriBuilder.queryParam("status", succes ? 3 : "1,2,4,5,6,7,8");
                     }
@@ -190,11 +188,9 @@ public class SpaceXService{
                 resume.setDateUtc(launch.getNet());
                 resume.setRocket(launch.getRocket().getConfiguration().getFullName());
 
-                // Gestion du statut de succès
                 String abbrev = launch.getStatus().getAbbrev();
                 resume.setStatutSucces("Success".equalsIgnoreCase(abbrev) ? "Oui" : "Failure".equalsIgnoreCase(abbrev) ? "Non" : "En attente");
 
-                // Extraction des liens prioritaires
                 if (launch.getVidUrls() != null && !launch.getVidUrls().isEmpty()) {
                     resume.setUrlVideo(launch.getVidUrls().get(0).getUrl());
                 }
@@ -266,10 +262,8 @@ public class SpaceXService{
     public ResyncAdminDto synchroniserDonneesManuellement() {
         ResyncAdminDto reponse = new ResyncAdminDto();
         try {
-            // --- 1. SÉCURISATION DU FETCH DES KPIS EN TEMPS RÉEL (SYNCHRONE) ---
             KpisDto kpis = new KpisDto();
 
-            // Requêtes directes pour bloquer le fil d'exécution jusqu'à la réponse de l'API
             SpaceDevsCountResponse totalData = spaceDevsClient.get()
                     .uri("/launches/?limit=1")
                     .retrieve()

@@ -36,7 +36,6 @@ public class SecurityConfig {
     private final UserDetailsService userDetailsService;
     private final JwtFilters jwtFilter;
 
-    // 1. Déclaration de la hiérarchie des rôles
     @Bean
     public RoleHierarchy roleHierarchy() {
         return RoleHierarchyImpl.fromHierarchy("ROLE_ADMIN > ROLE_USER");
@@ -47,7 +46,6 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    // 2. Configuration moderne de l'AuthenticationManager
     @Bean
     public AuthenticationManager authenticationManager(PasswordEncoder passwordEncoder) {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(this.userDetailsService);
@@ -87,7 +85,6 @@ public class SecurityConfig {
         return source;
     }
 
-    // 3. Filtre de sécurité principal, avec la hiérarchie explicitement appliquée aux routes protégées
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, RoleHierarchy roleHierarchy) throws Exception {
 
